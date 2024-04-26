@@ -1,0 +1,30 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+
+[System.Serializable]
+public class Node
+{
+    public Vector2Int coordinates;
+
+    public bool isWalkable;
+
+    public bool isExplored;
+
+    public bool isPath;
+
+    public Node conectedTo;
+
+    public Node(Vector2Int coordinateConsruct, bool isWalkabeConstruct) 
+        {
+
+        coordinates = coordinateConsruct;
+        isWalkable = isWalkabeConstruct;
+
+
+        }
+  
+
+
+}
