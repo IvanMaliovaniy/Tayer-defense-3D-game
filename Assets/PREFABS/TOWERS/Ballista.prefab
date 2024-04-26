@@ -63,6 +63,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   costForThisTower: 200
+  topTower: {fileID: 6131056645070147807}
+  downTower: {fileID: 8293807043288370748}
+  timeToAktivateParts: 0.5
 --- !u!1 &6131056645070147807
 GameObject:
   m_ObjectHideFlags: 0

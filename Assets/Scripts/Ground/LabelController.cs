@@ -14,17 +14,56 @@ public class LabelController : MonoBehaviour
     [Header("Color parameters")]
     [SerializeField] Color defaultColor = Color.white;
     [SerializeField] Color blockedColor = Color.grey;
+    [SerializeField] Color exploredColor = Color.yellow;
+    [SerializeField] Color pathColor = new Color(1f, 0.5f, 0f);
 
     TextMeshPro label;
 
     Vector2Int coordinates = new Vector2Int();
 
-    Waypoint waipoint;
+    GridManager gridManager;
+
+   // Waypoint waipoint;
 
 
     void SetLabelColor() 
     {
-        if (waipoint.IsItPath)
+        if (gridManager == null)
+        {
+            return;
+        }
+        else
+        {
+            Node node = gridManager.GetNode(coordinates);
+
+            if (node == null)
+            {
+                return;
+            }
+
+            if (!node.isWalkable)
+            {
+                label.color = blockedColor;
+            }
+            else if (node.isPath)
+            {
+                label.color = pathColor;
+            }
+            else if (node.isExplored)
+            {
+                label.color = exploredColor;
+            }
+            else if (node.isWalkable)
+            {
+                label.color = defaultColor;
+            }
+
+
+
+        }
+
+
+     /*   if (waipoint.IsItPath)
         {
             label.color = blockedColor;
         }
@@ -32,6 +71,8 @@ public class LabelController : MonoBehaviour
         {
             label.color = defaultColor;
         }
+        */
+
     }
 
 
@@ -47,11 +88,13 @@ public class LabelController : MonoBehaviour
     private void Awake()
     {
 
+        gridManager = FindObjectOfType<GridManager>();
+
         label = GetComponent<TextMeshPro>();
         label.enabled = false;
 
 
-        waipoint = GetComponentInParent<Waypoint>();
+       // waipoint = GetComponentInParent<Waypoint>();
 
         DisplayCoordinates();
 
@@ -73,7 +116,7 @@ public class LabelController : MonoBehaviour
             DisplayName();
 
 
-            label.enabled = false;  // ·”ƒ”“‹  ŒŒ–ƒ»Õ¿“» ¬»ƒ»Ã≤ ¬ ≈ƒ≤“Œ–≤ ﬁÕ≤“≤ ◊» Õ≤
+            label.enabled = true;  // ·”ƒ”“‹  ŒŒ–ƒ»Õ¿“» ¬»ƒ»Ã≤ ¬ ≈ƒ≤“Œ–≤ ﬁÕ≤“≤ ◊» Õ≤
         }
 
         SetLabelColor();
@@ -84,8 +127,13 @@ public class LabelController : MonoBehaviour
     void DisplayCoordinates() 
     {
 
-        coordinates.x = Mathf.RoundToInt(transform.position.x / UnityEditor.EditorSnapSettings.move.x);
-        coordinates.y = Mathf.RoundToInt(transform.position.z / UnityEditor.EditorSnapSettings.move.z);
+        if (gridManager == null)
+        {
+            return;
+        }
+
+        coordinates.x = Mathf.RoundToInt(transform.position.x / gridManager.UnityGridSize);
+        coordinates.y = Mathf.RoundToInt(transform.position.z / gridManager.UnityGridSize);
 
 
         label.text = coordinates.x + "," + coordinates.y ;

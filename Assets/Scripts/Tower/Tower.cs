@@ -7,6 +7,33 @@ public class Tower : MonoBehaviour
 
     [SerializeField] int costForThisTower = 50;
 
+    [SerializeField] GameObject topTower;
+    [SerializeField] GameObject downTower;
+
+    [SerializeField] float timeToAktivateParts = 0.5f;
+
+
+    private void Awake()
+    {
+        topTower.SetActive(false);
+        downTower.SetActive(false);
+    }
+
+    void Start()
+    {
+        StartCoroutine(Build());
+    }
+
+
+    IEnumerator Build() 
+    {
+
+        downTower.SetActive(true);
+        yield return new WaitForSeconds(timeToAktivateParts);
+        topTower.SetActive(true);
+
+    }
+
     public bool CreateTower( Tower towerPrefab, Vector3 prefabPosition ) 
     {
 
@@ -37,10 +64,7 @@ public class Tower : MonoBehaviour
         
     
     }
-    void Start()
-    {
-        
-    }
+    
 
     
     void Update()

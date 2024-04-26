@@ -6,7 +6,9 @@ using UnityEngine;
 public class EnemyMover : MonoBehaviour
 {
 
-    [SerializeField] List<Waypoint> path = new List<Waypoint>();
+     List<Node> path = new List<Node>();
+    GridManager gridManager;
+    Pathfinding pathfinding;
 
     [SerializeField] [Range(0f, 3f)] float speed = 1f;
 
@@ -15,47 +17,64 @@ public class EnemyMover : MonoBehaviour
     [SerializeField] Enemy thisEnemy;
 
 
-    void FindPath() 
+
+    private void Awake()
     {
-        path.Clear();
+        gridManager = FindObjectOfType<GridManager>();
+        pathfinding = FindObjectOfType<Pathfinding>();
 
-        GameObject parent = GameObject.FindGameObjectWithTag("Path");
-        //  GameObject[] waipoints = GameObject.FindGameObjectsWithTag("Path");
+    }
 
 
-        foreach (Transform child in parent.transform)
+
+    void RecalculatePath(bool resetPath) 
+    {
+        Vector2Int coordinates = new Vector2Int();
+
+        if (resetPath)
         {
-
-            Waypoint way = child.GetComponent<Waypoint>();
-
-            if (way != null)
-            {
-                path.Add(way);
-            }
-
-            
+            coordinates = pathfinding.StartCoordinates;
         }
 
-     /*   foreach (var waipoint in waipoints)
+        else
         {
-            path.Add(waipoint.GetComponent<Waypoint>());
-        }  */
-    
-    
+            coordinates = gridManager.GetCoordinatesFromPosition(transform.position);
+        }
+
+
+        StopAllCoroutines();
+
+        path.Clear();
+
+        path = pathfinding.GetNewPath(coordinates);
+
+        StartCoroutine(MoveToWaipoint());
     }
+    
+    
 
 
     void ReturnToStart() 
     {
-        transform.position = path[0].transform.position;
+        transform.position = gridManager.GetPositionFromCoordinates(pathfinding.StartCoordinates);
     
+    }
+
+    void FinishPath()
+    {
+
+        thisEnemy.HealthPenalty();
+        this.gameObject.SetActive(false);
+
     }
 
     void OnEnable()
     {
-      FindPath();
-      ReturnToStart();
-      StartCoroutine(MoveToWaipoint());
+        ReturnToStart();
+
+        RecalculatePath(true);
+      
+        
     }
 
     
@@ -66,10 +85,10 @@ public class EnemyMover : MonoBehaviour
 
     IEnumerator MoveToWaipoint() 
     {
-        foreach (Waypoint item in path)
+        for(int i = 1; i<path.Count; i++ )
         {
             Vector3 startPosition = transform.position;
-            Vector3 endPosition = new Vector3(item.transform.position.x, transform.position.y, item.transform.position.z);
+            Vector3 endPosition = gridManager.GetPositionFromCoordinates(path[i].coordinates); ;
             float travelPersent = 0f;
 
             transform.LookAt(endPosition);  // повертаємо ворога у напрямку руху
@@ -90,11 +109,5 @@ public class EnemyMover : MonoBehaviour
     }
 
 
-    void FinishPath() 
-    {
-
-        thisEnemy.HealthPenalty();
-        this.gameObject.SetActive(false);
-
-    }
+   
 }

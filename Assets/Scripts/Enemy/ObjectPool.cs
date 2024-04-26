@@ -8,7 +8,7 @@ public class ObjectPool : MonoBehaviour
     GameObject[] pool;
 
 
-    [SerializeField] [Range(1, 50)]int poolSize = 5;
+    [SerializeField] [Range(0, 50)]int poolSize = 5;
 
 
     [SerializeField][Range(0.1f, 30f )] float timeBeetwenSpawnEnemy;
